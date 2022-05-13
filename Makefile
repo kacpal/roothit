@@ -7,6 +7,8 @@ $(NAME)-y += $(SRCDIR)/util.o
 $(NAME)-y += $(SRCDIR)/modules.o
 $(NAME)-y += $(SRCDIR)/syscall.o
 $(NAME)-y += $(SRCDIR)/scheduler.o
+$(NAME)-y += $(SRCDIR)/memory.o
+
 
 HEADERS := $(PWD)/include
 ccflags-y += -I$(HEADERS)

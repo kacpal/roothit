@@ -27,8 +27,8 @@ static inline void write_cr0_forced(unsigned long val) {
   asm volatile("mov %0, %%cr0" : "+r"(val), "+m"(__force_order));
 }
 
-void protect_mem(void) { write_cr0_forced(cr0); }
+void protect_mem(void) { write_cr0_forced(read_cr0()); }
 
-void unprotect_mem(void) { write_cr0_forced(cr0 & ~0x00010000); }
+void unprotect_mem(void) { write_cr0_forced(read_cr0() & ~0x00010000); }
 
 void init_util() { cr0 = read_cr0(); }
