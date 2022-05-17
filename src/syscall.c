@@ -23,10 +23,8 @@ void check_sct(void) {
   unsigned long addr;
   int i;
 
-  printk(KERN_INFO "roothit: Checking sys_call_table");
-
   for (i = 0; i < NR_syscalls; i++) {
-    addr = sct[i];
+    addr = sct[KSYM_NAME_LEN];
 
     if (!ckt(addr)) {
       sprint_symbol(f_name_buff, sct[i]);
@@ -57,7 +55,6 @@ void fetch_sct(void) {
 void init_sct_check(void) {
   int i;
 
-  printk(KERN_INFO "roothit: Initalizing sys_call_table checks");
   fetch_sct();
   ckt = (void *)fetch_function("core_kernel_text");
 

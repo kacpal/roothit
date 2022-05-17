@@ -1,6 +1,7 @@
 #include "core.h"
 #include "config.h"
 #include "modules.h"
+#include "procfs.h"
 #include "scheduler.h"
 #include "syscall.h"
 #include "util.h"
@@ -13,6 +14,8 @@ MODULE_VERSION("0.01");
 static int __init lkm_example_init(void) {
   printk(KERN_INFO "roothit: starting\n");
 
+  init_procfs();
+
 #if SCHEDULE_CHECKS
   sched_init();
 #else
@@ -24,6 +27,7 @@ static int __init lkm_example_init(void) {
 
 static void __exit lkm_example_exit(void) {
   sched_exit();
+  cleanup_procfs();
   printk(KERN_INFO "roothit: exited\n");
 }
 

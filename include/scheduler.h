@@ -5,6 +5,7 @@
 #include <linux/sched.h>
 
 int sched_init(void);
+void run_checks(void);
 int sched_exit(void);
 
 #endif /* SCHEDULER_H */

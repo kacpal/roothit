@@ -5,6 +5,7 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 
+#include "memory.h"
 #include "util.h"
 
 static struct list_head *real_module_list;
@@ -22,42 +23,6 @@ bool find_mod(struct module *mod) {
 
   return on_list;
 }
-
-// TODO find more stable way to unhide modules
-void unhide_mod(struct module *mod) {
-  list_add(&mod->list, THIS_MODULE->list.next);
-
-  if (mod->exit != NULL)
-    mod->exit();
-}
-
-// int _memsrch(const void *addr, int len1, const void *code, int len2)
-// {
-//   while (len1 >= len2) 
-//   {
-//       len1--;
-//       if (memcmp(addr, code, len2) == 0)
-//       {
-//           return -1;
-//       }
-//       addr++;
-//   }
-//   return 0;
-// }
-
-// int lkm_code_check(unsigned long *addr, int len)
-// {
-//   // code signatures.. 
-//   //
-//   // 0f 22 c0            mov    %rax,%cr0
-//   char cr0_rax[3] = {'\x0f','\x22','\xc0'};
-
-//   if(_memsrch(addr, len, cr0_rax, 3) != 0)
-//   {
-//       return -1; 
-//   }
-//   return 0; 
-// }
 
 void run_module_check(void) {
   struct kobject *cur, *tmp;
@@ -83,31 +48,29 @@ void run_module_check(void) {
     // check for module list tampering
     if (module->list.next == module->list.prev) {
       printk(KERN_ALERT "Module %s is hidden\n", module->name);
-      // unhide_mod(module);
     }
 
     if (module->list.next == NULL || module->list.prev == NULL) {
       printk(KERN_ALERT "Module %s is hidden\n", module->name);
-      // unhide_mod(module);
-    }
-
-    if (module->list.next == LIST_POISON1 ||
-        module->list.prev == LIST_POISON2) {
-      printk(KERN_ALERT "Module %s is hidden\n", module->name);
-      // unhide_mod(module);
     }
 
     // search in standard module list
     if (!find_mod(mod_kobj->mod)) {
       printk(KERN_ALERT "Module %s is hidden\n", module->name);
-      // unhide_mod(module);
     }
 
-    // // test
-    // if (lkm_code_check(mod_kobj->mod->core_layout.base, mod_kobj->mod->core_layout.text_size) != 0) {
-    //   printk(KERN_ALERT "Module %s contains sus code\n", module->name);
-    //   // unhide_mod(module);
-    // }
+    // memory checks
+    if (check_symbols(
+            (module->core_layout.base + module->core_layout.text_size),
+            (module->core_layout.ro_size - module->core_layout.text_size)) !=
+        0) {
+      printk(KERN_ALERT "Module %s contains suspicious string\n", module->name);
+    }
+
+    if (check_code(module->core_layout.base, module->core_layout.text_size) !=
+        0) {
+      printk(KERN_ALERT "Module %s contains suspicious code\n", module->name);
+    }
   }
 }
 

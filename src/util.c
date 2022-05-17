@@ -4,7 +4,6 @@
 
 #include <linux/kprobes.h>
 
-unsigned long cr0;
 static struct kprobe kp;
 
 unsigned long fetch_function(char *f_name) {
@@ -30,5 +29,3 @@ static inline void write_cr0_forced(unsigned long val) {
 void protect_mem(void) { write_cr0_forced(read_cr0()); }
 
 void unprotect_mem(void) { write_cr0_forced(read_cr0() & ~0x00010000); }
-
-void init_util() { cr0 = read_cr0(); }

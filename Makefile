@@ -8,6 +8,8 @@ $(NAME)-y += $(SRCDIR)/modules.o
 $(NAME)-y += $(SRCDIR)/syscall.o
 $(NAME)-y += $(SRCDIR)/scheduler.o
 $(NAME)-y += $(SRCDIR)/memory.o
+$(NAME)-y += $(SRCDIR)/procfs.o
+$(NAME)-y += $(SRCDIR)/cr0.o
 
 
 HEADERS := $(PWD)/include

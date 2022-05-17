@@ -10,12 +10,14 @@ This LKM was made for a school project with main objective to learn about defens
 1. [Introduction](#introduction)
 2. [Testing and Development](#testing-and-development)
 3. [Configuration](#configuration)
-4. [Methodology](#methodology)
+4. [Usage](#usage)
+5. [Methodology](#methodology)
       1. [Kprobe](#kprobe)
       2. [Modules](#modules)
       3. [Syscall](#syscall)
-5. [Future possible mechanisms](#future-possible-mechanims)
-6. [References](#references)
+      4. [Memory](#memory) 
+6. [Future possible mechanisms](#future-possible-mechanims)
+7. [References](#references)
 
 
 ## Testing and Development
@@ -28,6 +30,10 @@ To provide better quality of code styling we use help of the `clang-format`.
 
 ## Configuration
 You can configure roothit using `config.h`. There you can select which checks do you want to disable or leave enabled. If `SCHEDULE_CHECKS` is set to 1, selected checks will be performed periodically. If set to 0, roothit will run just one iteration and exit.
+
+
+## Usage
+You can also communicate with the module while it's running through procfs (file `/proc/roothit`). Echo 0 to disable task scheduler, 1 to enable and 2 to once run all checks. 
 
 
 ## Methodology
@@ -57,12 +63,13 @@ That's why the second check is much more interesting. We're checking each entry 
 
 After hijacked syscall is detected, we can restore the original one from our saved copy. Because `sys_call_table` resides on readonly page, we will need to disable readonly memory protection. This can be done simply by flipping bit 16 of cr0 register (only for x86 systems). This techinque is also used by most rootkits.
 
+### Memory
+Another method to addtionally check security of loaded modules is to look for certain symbols in their memory. We can achieve that by simply iterating over sections of memory that are described by module kernel objects. `roothit` is looking for code that can disable cr0 memory protection and a short list of example strings. 
+
 
 ## Future possible mechanims
-- Searching memory for assembly code that flips cr0 
-- Searching memory for readable strings that are commonly associated with rootkits
-- Checking for hidden open ports
-- Checking for hidden files
+- Check for hidden open ports
+- Check for hidden files
 
 
 ## References

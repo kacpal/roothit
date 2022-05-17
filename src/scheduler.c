@@ -1,10 +1,11 @@
 #include "scheduler.h"
 #include "config.h"
 #include "core.h"
+#include "cr0.h"
+#include "memory.h"
 #include "modules.h"
 #include "syscall.h"
 #include "util.h"
-#include "memory.h"
 
 static struct work_struct work;
 static void work_handler(struct work_struct *data);
@@ -20,9 +21,9 @@ void run_checks(void) {
   run_syscall_check();
 #endif /* CHECK SYSCALL_TABLE */
 
-#if CHECK_MEMORY
-  run_memory_check();
-#endif /* CHECK_MEMORY */
+#if CHECK_CR0
+  run_cr0_check();
+#endif /* CHECK_CR0 */
 }
 
 static void work_handler(struct work_struct *data) {
@@ -33,8 +34,6 @@ static void work_handler(struct work_struct *data) {
 
 int sched_init(void) {
   INIT_WORK(&work, work_handler);
-  init_util();
-  
   run_checks();
   schedule_delayed_work(&delayed_work,
                         __msecs_to_jiffies(SCHEDULER_INTERVAL_MS));

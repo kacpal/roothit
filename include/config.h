@@ -2,9 +2,9 @@
 #define CONFIG_H
 
 // checks:
-#define CHECK_MODULE_LIST 0
-#define CHECK_SYSCALL_TABLE 0
-#define CHECK_MEMORY 0
+#define CHECK_MODULE_LIST 1
+#define CHECK_SYSCALL_TABLE 1
+#define CHECK_CR0 1
 
 // scheduler:
 #define SCHEDULE_CHECKS 1
